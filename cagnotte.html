@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cagnotte Vacances</title>
+
+    <style>
+
+        body{
+            background-image: url("playa.jpg");
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .form__container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            border: 1px solid black;
+            border-radius: 2cap;
+            padding: 20px;
+            width: 60%;
+            background-color:antiquewhite
+        }
+
+        .form__zone {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .form__zone label {
+            margin-bottom: 5px;
+        }
+
+        .form__zone input {
+            margin-bottom: 10px;
+        }
+
+
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+        }
+
+        table {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .table__header {
+            background-color: #d2d0d0;
+        }
+
+        #totals {
+            text-align: center;
+            font-weight: bold;
+        }
+
+        button {
+            background-color: #989898;
+            color: white;
+            padding: 10px 20px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 2px solid black;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        
+        }
+
+        button:hover {
+            background-color: #7f7f7f;
+        }
+
+
+        .Remove__button {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 2px solid black;
+            max-width: 250px;
+        }
+
+        .Remove__button:hover {
+            background-color: #d32f2f;
+        }
+        
+    </style>
+</head>
+
+<body>
+
+    
+    <div class="form__container">
+
+    <h1>Cagnotte Vacances</h1>
+
+    <h3 id="solde">Solde total : 0 €</h3>
+
+        <form>
+            <div class="form__zone">
+                <label for="nom"><b>Nom:</b></label>
+                <input type="text" id="nom" name="nom" placeholder="Nom" required>
+            </div>
+            <div class="form__zone">
+                <label for="paye"><b>Paye:</b></label>
+                <input type="number" id="paye" name="paye" placeholder="Paye" required>
+            </div>
+            <div class="form__zone">
+                <label for="depense"><b>Dépense:</b></label>
+                <input type="number" id="depense" name="depense" placeholder="Dépense" required>
+            </div>
+            <div class="form__button">
+                <button type="button" id="ajouter" onclick="addRow()">Ajouter</button>
+            </div>
+        </form>
+
+
+        <table id="cagnotteTable">
+            <thead>
+                <tr class="table__header">
+                    <th>Nom</th>
+                    <th>Paye</th>
+                    <th>Dépense</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" id="totals">Total Paye: 0 €, Total Dépense: 0 €</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <button type="button" class="Remove__button" onclick="removeLastRow()">Retirer la dernière cellule</button>
+    </div>
+    <script>
+
+        function addRow() {
+            const table = document.getElementById('cagnotteTable').getElementsByTagName('tbody')[0];
+            const newRow = table.insertRow();
+
+            const nomCell = newRow.insertCell(0);
+            const payeCell = newRow.insertCell(1);
+            const depenseCell = newRow.insertCell(2);
+
+            nomCell.textContent = document.getElementById('nom').value || "Inconnu";
+            payeCell.textContent = formatCurrency(document.getElementById('paye').value || 0);
+            depenseCell.textContent = formatCurrency(document.getElementById('depense').value || 0);
+
+            document.getElementById('nom').value = '';
+            document.getElementById('paye').value = '';
+            document.getElementById('depense').value = '';
+
+            calculateTotals();
+        }
+
+        function calculateTotals() {
+            const rows = document.getElementById('cagnotteTable').getElementsByTagName('tbody')[0].rows;
+            let totalPaye = 0;
+            let totalDepense = 0;
+
+            for (let i = 0; i < rows.length; i++) {
+                const paye = parseFloat(rows[i].cells[1].textContent.replace('€', '')) || 0;
+                const depense = parseFloat(rows[i].cells[2].textContent.replace('€', '')) || 0;
+                totalPaye += paye;
+                totalDepense += depense;
+            }
+
+            const solde = totalPaye - totalDepense;
+
+            document.getElementById('totals').textContent = `Total Paye: ${formatCurrency(totalPaye)}, Total Dépense: ${formatCurrency(totalDepense)}`;
+            document.getElementById('solde').textContent = `Solde total : ${formatCurrency(solde)}`;
+        }
+
+        function formatCurrency(value) {
+            return `${parseFloat(value).toFixed(2)} €`;
+        }
+
+        function removeLastRow() {
+            const table = document.getElementById('cagnotteTable').getElementsByTagName('tbody')[0];
+            if (table.rows.length > 0) {
+                table.deleteRow(table.rows.length - 1);
+                calculateTotals();
+            } else {
+                alert("Aucune ligne à supprimer !");
+            }
+        }
+
+    </script>
+</body>
+</html>
